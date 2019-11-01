@@ -9,11 +9,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.example.tmdb.R;
 import com.example.tmdb.common.Common;
+import com.example.tmdb.databinding.MovieItemBinding;
 import com.example.tmdb.model.Movie;
 import com.example.tmdb.view.DetailsActivity;
 
@@ -32,17 +33,17 @@ public class PopularMovieAdapter extends RecyclerView.Adapter<PopularMovieAdapte
     @NonNull
     @Override
     public MovieViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.movie_item, parent, false);
-        return new MovieViewHolder(view);
+
+        MovieItemBinding movieItemBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),R.layout.movie_item,parent,false);
+        return new MovieViewHolder(movieItemBinding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MovieViewHolder holder, int position) {
-        holder.name.setText(movies.get(position).getOriginalTitle());
-        holder.rating.setText(movies.get(position).getVoteAverage().toString());
-        Glide.with(context)
-                .load(Common.IMG_PATH + movies.get(position).getPosterPath())
-                .into(holder.poster);
+
+        Movie movie = movies.get(position);
+        holder.movieItemBinding.setMovie(movie);
+
 
     }
 
@@ -52,17 +53,14 @@ public class PopularMovieAdapter extends RecyclerView.Adapter<PopularMovieAdapte
     }
 
     public class MovieViewHolder extends RecyclerView.ViewHolder {
-        public ImageView poster;
-        public TextView name, rating;
+        private MovieItemBinding movieItemBinding;
 
-        public MovieViewHolder(@NonNull View itemView) {
-            super(itemView);
+        public MovieViewHolder(@NonNull MovieItemBinding movieItemBinding) {
+            super(movieItemBinding.getRoot());
+            this.movieItemBinding = movieItemBinding;
 
-            poster = itemView.findViewById(R.id.imageView);
-            name = itemView.findViewById(R.id.movieName);
-            rating = itemView.findViewById(R.id.movieRating);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
+            movieItemBinding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     int position = getAdapterPosition();
@@ -77,5 +75,11 @@ public class PopularMovieAdapter extends RecyclerView.Adapter<PopularMovieAdapte
                 }
             });
         }
+    }
+
+
+    public void updateData(ArrayList<Movie> movies){
+        this.movies = movies;
+        notifyDataSetChanged();
     }
 }
