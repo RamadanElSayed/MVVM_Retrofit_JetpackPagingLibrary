@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
+import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tmdb.R;
@@ -20,36 +21,26 @@ import com.example.tmdb.view.DetailsActivity;
 
 import java.util.ArrayList;
 
-public class PopularMovieAdapter extends RecyclerView.Adapter<PopularMovieAdapter.MovieViewHolder> {
+public class PopularMovieAdapter extends PagedListAdapter<Movie, PopularMovieAdapter.MovieViewHolder> {
 
     private Context context;
-    private ArrayList<Movie> movies;
 
-    public PopularMovieAdapter(Context context, ArrayList<Movie> movies) {
+    public PopularMovieAdapter(Context context) {
+        super(Movie.CALLBACK);
         this.context = context;
-        this.movies = movies;
     }
 
     @NonNull
     @Override
     public MovieViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        MovieItemBinding movieItemBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),R.layout.movie_item,parent,false);
+        MovieItemBinding movieItemBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.movie_item, parent, false);
         return new MovieViewHolder(movieItemBinding);
     }
 
-    @Override
     public void onBindViewHolder(@NonNull MovieViewHolder holder, int position) {
-
-        Movie movie = movies.get(position);
+        Movie movie = getItem(position);
         holder.movieItemBinding.setMovie(movie);
-
-
-    }
-
-    @Override
-    public int getItemCount() {
-        return movies.size();
     }
 
     public class MovieViewHolder extends RecyclerView.ViewHolder {
@@ -67,19 +58,13 @@ public class PopularMovieAdapter extends RecyclerView.Adapter<PopularMovieAdapte
 
                     if (position != RecyclerView.NO_POSITION) {
 
-                        Movie selectedMovie = movies.get(position);
+                        Movie selectedMovie = getItem(position);
                         Intent intent = new Intent(context, DetailsActivity.class);
-                        intent.putExtra("movie",selectedMovie);
+                        intent.putExtra("movie", selectedMovie);
                         context.startActivity(intent);
-                     }
+                    }
                 }
             });
         }
-    }
-
-
-    public void updateData(ArrayList<Movie> movies){
-        this.movies = movies;
-        notifyDataSetChanged();
     }
 }

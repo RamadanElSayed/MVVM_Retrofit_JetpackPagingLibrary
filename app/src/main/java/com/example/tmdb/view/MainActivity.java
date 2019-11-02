@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.paging.PagedList;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,7 +33,7 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ArrayList<Movie> movies;
+    private PagedList<Movie> movies;
     private RecyclerView recyclerViewMovies;
     private PopularMovieAdapter popularMovieAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         getSupportActionBar().setTitle("TMDB POPULAR MOVIES");
-        activityMainBinding = DataBindingUtil.setContentView(this,R.layout.activity_main);
+        activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         popularMoviesViewModel = ViewModelProviders.of(this).get(PopularMoviesViewModel.class);
 
@@ -65,12 +66,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getPopularMovies() {
-        popularMoviesViewModel.getPopularMovies().observe(this, new Observer<List<Movie>>() {
-            @Override
-            public void onChanged(List<Movie> moviesFromLiveData) {
-                movies = (ArrayList<Movie>)moviesFromLiveData;
-                setUi();
+//        popularMoviesViewModel.getPopularMovies().observe(this, new Observer<List<Movie>>() {
+//            @Override
+//            public void onChanged(List<Movie> moviesFromLiveData) {
+//                movies = (ArrayList<Movie>)moviesFromLiveData;
+//                setUi();
+//
+//            }
+//        });
 
+
+        popularMoviesViewModel.getMoviePagedListLiveData().observe(this, new Observer<PagedList<Movie>>() {
+            @Override
+            public void onChanged(PagedList<Movie> moviePagedListLiveData) {
+                movies = moviePagedListLiveData;
+                setUi();
             }
         });
 
@@ -79,12 +89,14 @@ public class MainActivity extends AppCompatActivity {
     private void setUi() {
         recyclerViewMovies = activityMainBinding.rvMovies;
 
-        popularMovieAdapter = new PopularMovieAdapter(this,movies);
-        if(this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+        popularMovieAdapter = new PopularMovieAdapter(this);
 
-        recyclerViewMovies.setLayoutManager(new GridLayoutManager(this,2));
-        }else{
-            recyclerViewMovies.setLayoutManager(new GridLayoutManager(this,4));
+        popularMovieAdapter.submitList(movies);
+        if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+
+            recyclerViewMovies.setLayoutManager(new GridLayoutManager(this, 2));
+        } else {
+            recyclerViewMovies.setLayoutManager(new GridLayoutManager(this, 4));
 
         }
         recyclerViewMovies.setItemAnimator(new DefaultItemAnimator());
