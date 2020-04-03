@@ -22,16 +22,14 @@ public class MovieDataSource extends PageKeyedDataSource<Long, Movie> {
     private ApiService apiService;
     private Application application;
 
-    public MovieDataSource(ApiService apiService, Application application) {
+    public MovieDataSource(ApiService apiService) {
         this.apiService = apiService;
-        this.application = application;
     }
 
     @Override
     public void loadInitial(@NonNull LoadInitialParams params, @NonNull final LoadInitialCallback callback) {
-        apiService = RetrofitInstance.getServiece();
-        Call<MovieResponse> call = apiService.getPopularMoviesWithPaging(Common.API_KEY, 1);
 
+        Call<MovieResponse> call = apiService.getPopularMoviesWithPaging(Common.API_KEY, 1);
         call.enqueue(new Callback<MovieResponse>() {
             @Override
             public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
@@ -59,7 +57,6 @@ public class MovieDataSource extends PageKeyedDataSource<Long, Movie> {
 
     @Override
     public void loadAfter(@NonNull final LoadParams<Long> params, @NonNull final LoadCallback<Long, Movie> callback) {
-        apiService = RetrofitInstance.getServiece();
         Call<MovieResponse> call = apiService.getPopularMoviesWithPaging(Common.API_KEY, params.key);
 
         call.enqueue(new Callback<MovieResponse>() {

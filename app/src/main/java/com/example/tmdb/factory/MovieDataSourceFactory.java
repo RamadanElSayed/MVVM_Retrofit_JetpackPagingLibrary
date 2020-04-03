@@ -17,8 +17,7 @@ public class MovieDataSourceFactory extends DataSource.Factory {
     private ApiService apiService;
     private MutableLiveData<MovieDataSource> movieDataSourceMutableLiveData;
 
-    public MovieDataSourceFactory(ApiService apiService, Application application) {
-        this.application = application;
+    public MovieDataSourceFactory(ApiService apiService) {
         this.apiService = apiService;
         movieDataSourceMutableLiveData = new MutableLiveData<>();
     }
@@ -31,7 +30,7 @@ public class MovieDataSourceFactory extends DataSource.Factory {
     @NonNull
     @Override
     public DataSource create() {
-        movieDataSource = new MovieDataSource(apiService, application);
+        movieDataSource = new MovieDataSource(apiService);
         movieDataSourceMutableLiveData.postValue(movieDataSource);
         return movieDataSource;
     }

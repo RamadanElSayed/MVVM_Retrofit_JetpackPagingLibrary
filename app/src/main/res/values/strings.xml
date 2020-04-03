@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">TMDB</string>
     <string name="title_activity_details">DetailsActivity</string>
+    <string name="api_key" translatable="false">b62530c9f95c2afba0ccb8662a4a9e00</string>
+
 </resources>

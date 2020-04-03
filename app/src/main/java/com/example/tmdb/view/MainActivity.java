@@ -3,6 +3,7 @@ package com.example.tmdb.view;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.paging.PagedList;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -14,6 +15,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.example.tmdb.Injection;
 import com.example.tmdb.R;
 import com.example.tmdb.adapter.PopularMovieAdapter;
 import com.example.tmdb.common.Common;
@@ -22,6 +24,7 @@ import com.example.tmdb.model.Movie;
 import com.example.tmdb.model.MovieResponse;
 import com.example.tmdb.service.ApiService;
 import com.example.tmdb.service.RetrofitInstance;
+import com.example.tmdb.viewmodel.MainViewModelFactory;
 import com.example.tmdb.viewmodel.PopularMoviesViewModel;
 
 import java.util.ArrayList;
@@ -33,6 +36,13 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
+    /* To use paging we need
+
+    1: DataSource for providing the data step by step
+    2: data source factory for providing data from data source
+    3: paged list adapter
+
+     */
     private PagedList<Movie> movies;
     private RecyclerView recyclerViewMovies;
     private PopularMovieAdapter popularMovieAdapter;
@@ -48,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("TMDB POPULAR MOVIES");
         activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
-        popularMoviesViewModel = ViewModelProviders.of(this).get(PopularMoviesViewModel.class);
+        popularMoviesViewModel = new ViewModelProvider(this,new MainViewModelFactory(Injection.provideMovieRepository(this))).get(PopularMoviesViewModel.class);
 
         getPopularMovies();
 
@@ -93,8 +103,8 @@ public class MainActivity extends AppCompatActivity {
 
         popularMovieAdapter.submitList(movies);
         if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-
             recyclerViewMovies.setLayoutManager(new GridLayoutManager(this, 2));
+
         } else {
             recyclerViewMovies.setLayoutManager(new GridLayoutManager(this, 4));
 
